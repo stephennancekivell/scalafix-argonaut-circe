@@ -63,8 +63,10 @@ case class Argonautcirce_v0_0_1(mirror: Mirror)
 
         val typeTerm = Term.Name.apply(tName)
         val q =
-          q"""implicit val ${listName.head}: Decoder[${tVar}] = $renameTerm("id", "first_name", "last_name")($typeTerm.apply)"""
-        ctx.replaceTree(defnVal, q.toString())
+          q"""val ${listName.head}: Decoder[${tVar}] = $renameTerm("id", "first_name", "last_name")($typeTerm.apply)"""
+
+        val qq = q.copy(mods = mods)
+        ctx.replaceTree(defnVal, qq.toString())
     }.asPatch
   }
 }
