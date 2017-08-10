@@ -47,9 +47,7 @@ case class Argonautcirce_v0_0_1(mirror: Mirror)
       case defnVal @ Defn.Val(
             mods,
             listName, // List(Pat.Var.Term(Term.Name(userDecodeJson))),
-            Some(
-              Type.Apply(Type.Name(decodeJson), List(tVar @ Type.Name(tName)))
-            ), // Type.Name(user)))),
+            typeDefinition,
             Term.Apply(
               Term.Apply(n @ Term.Name(jdecode3L),
                          List(Term.Select(Term.Name(user), Term.Name(apply)))),
@@ -60,13 +58,53 @@ case class Argonautcirce_v0_0_1(mirror: Mirror)
           ) if n.isOneOfSymbols(renames.keySet) =>
         val renameTo = renames(n.symbol.normalized.syntax)
         val renameTerm = Term.Name.apply(renameTo)
+        val typeTerm = Term.Name.apply(user)
 
-        val typeTerm = Term.Name.apply(tName)
-        val q =
-          q"""val ${listName.head}: Decoder[${tVar}] = $renameTerm("id", "first_name", "last_name")($typeTerm.apply)"""
+        val q = typeDefinition match {
+          case Some(
+              Type.Apply(Type.Name(decodeJson), List(tVar @ Type.Name(tName)))
+              ) =>
+            q"""val ${listName.head}: Decoder[${tVar}] = $renameTerm("id", "first_name", "last_name")($typeTerm.apply)"""
+          case _ =>
+            q"""val ${listName.head} = $renameTerm("id", "first_name", "last_name")($typeTerm.apply)"""
+        }
 
         val qq = q.copy(mods = mods)
         ctx.replaceTree(defnVal, qq.toString())
+      case defnDef @ Defn.Def(
+            mods,
+            name,
+            tparams @ List(),
+            paramss @ List(),
+            decltpe,
+            body @ Term.Apply(
+              Term.Apply(
+                n @ Term.Name(jdecode3L),
+                List(
+                  Term.Select(typeTerm @ Term.Name(user), Term.Name("apply"))
+                )
+              ),
+              fields
+            )
+          ) if n.isOneOfSymbols(renames.keySet) =>
+        val renameTo = renames(n.symbol.normalized.syntax)
+        val renameTerm = Term.Name.apply(renameTo)
+        val dMod = defnDef.copy(
+          decltpe = defnDef.decltpe match {
+            case Some(
+                Type.Apply(Type.Name("DecodeJson"), List(typeTerm))
+                ) =>
+              Some(
+                Type.Apply(Type.Name("Decoder"), List(typeTerm))
+              )
+            case _ => None
+          },
+          body = Term.Apply(
+            Term.Apply(renameTerm, fields),
+            List(Term.Select(typeTerm, Term.Name("apply")))
+          )
+        )
+        ctx.replaceTree(defnDef, dMod.toString())
     }.asPatch
   }
 }

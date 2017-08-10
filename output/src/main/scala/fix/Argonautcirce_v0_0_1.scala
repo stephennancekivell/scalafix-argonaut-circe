@@ -8,4 +8,7 @@ object Argonautcirce_v0_0_1_Test {
   case class User(id: String, first_name: Int, last_name: String)
   implicit val UserDecodeJson: Decoder[User] = Decoder.forProduct3("id", "first_name", "last_name")(User.apply)
   val nonImplicit: Decoder[User] = Decoder.forProduct3("id", "first_name", "last_name")(User.apply)
+  val noType = Decoder.forProduct3("id", "first_name", "last_name")(User.apply)
+  def defUser: Decoder[User] = Decoder.forProduct3("id", "first_name", "last_name")(User.apply)
+  def defNoType = Decoder.forProduct3("id", "first_name", "last_name")(User.apply)
 }

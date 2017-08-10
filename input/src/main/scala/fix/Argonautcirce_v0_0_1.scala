@@ -13,4 +13,8 @@ object Argonautcirce_v0_0_1_Test {
     jdecode3L(User.apply)("id", "first_name", "last_name")
   val nonImplicit: DecodeJson[User] =
     jdecode3L(User.apply)("id", "first_name", "last_name")
+  val noType = jdecode3L(User.apply)("id", "first_name", "last_name")
+  def defUser: DecodeJson[User] =
+    jdecode3L(User.apply)("id", "first_name", "last_name")
+  def defNoType = jdecode3L(User.apply)("id", "first_name", "last_name")
 }
