@@ -24,7 +24,7 @@ object Util {
   }
 }
 
-case class Argonautcirce_v0_0_1(mirror: Mirror)
+case class Scalafixargonautcirce_master(mirror: Mirror)
     extends SemanticRewrite(mirror) {
   import Util._
 

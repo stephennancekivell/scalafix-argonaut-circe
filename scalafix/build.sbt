@@ -10,14 +10,13 @@ val circeDeps = Seq(
 ).map(_ % circeVersion)
 
 lazy val rewrites = project.settings(
-  libraryDependencies ++= Seq("ch.epfl.scala" %% "scalafix-core" % "0.5.0-M2") ++ circeDeps
+  libraryDependencies ++= Seq("ch.epfl.scala" %% "scalafix-core" % "0.5.0-M2")
 )
 
 lazy val input = project.settings(
   scalametaSourceroot := sourceDirectory.in(Compile).value,
   libraryDependencies += "io.argonaut" %% "argonaut" % "6.1a"
 )
-
 
 lazy val output = project.settings(
   libraryDependencies ++= circeDeps
