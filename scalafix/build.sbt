@@ -1,7 +1,6 @@
 lazy val V = _root_.scalafix.Versions
-name := """scalafix-argonaut-circe"""
 // Use a scala version supported by scalafix.
-scalaVersion in ThisBuild := org.scalameta.BuildInfo.supportedScalaVersions.last
+scalaVersion in ThisBuild := V.scala212
 
 val circeVersion = "0.8.0"
 val circeDeps = Seq(
@@ -11,14 +10,12 @@ val circeDeps = Seq(
 ).map(_ % circeVersion)
 
 lazy val rewrites = project.settings(
-  libraryDependencies ++= Seq(
-    "ch.epfl.scala" %% "scalafix-core" % V.version
-  )
+  libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % V.version
 )
 
 lazy val input = project.settings(
-  scalametaSourceroot := sourceDirectory.in(Compile).value,
-  libraryDependencies += "io.argonaut" %% "argonaut" % "6.1a"
+  scalafixSourceroot := sourceDirectory.in(Compile).value,
+  libraryDependencies += "io.argonaut" %% "argonaut" % "6.2"
 )
 
 lazy val output = project.settings(

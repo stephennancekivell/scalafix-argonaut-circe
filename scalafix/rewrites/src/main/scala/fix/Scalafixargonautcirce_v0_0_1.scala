@@ -16,16 +16,17 @@ object Util {
 
   implicit class TermNameOps(t: Name) {
     def isSymbol(s: String)(implicit mirror: SemanticCtx): Boolean = {
-      t.symbolOpt.exists(_.normalized.syntax == s)
+      t.symbol.exists(_.normalized.syntax == s)
     }
 
-    def isOneOfSymbols(symbols: Set[String])(implicit mirror: SemanticCtx): Boolean =
-      t.symbolOpt.exists(s => symbols.contains(s.normalized.syntax))
+    def isOneOfSymbols(symbols: Set[String])(
+        implicit mirror: SemanticCtx): Boolean =
+      t.symbol.exists(s => symbols.contains(s.normalized.syntax))
   }
 }
 
-case class Scalafixargonautcirce_v0_0_1(mirror: SemanticCtx)
-    extends SemanticRewrite(mirror) {
+case class Scalafixargonautcirce_v0_0_1(sctx: SemanticCtx)
+    extends SemanticRewrite(sctx) {
   import Util._
 
   val renames: Map[String, String] =
