@@ -6,7 +6,7 @@ import scala.meta._
 
 object Util {
   def rename(ctx: RewriteCtx, t: Term.Name, renames: Map[String, String])(
-      implicit mirror: Mirror
+      implicit mirror: SemanticCtx
   ): Patch = {
     renames.collect {
       case (target, rename) if t.isSymbol(target) =>
@@ -15,16 +15,16 @@ object Util {
   }
 
   implicit class TermNameOps(t: Name) {
-    def isSymbol(s: String)(implicit mirror: Mirror): Boolean = {
+    def isSymbol(s: String)(implicit mirror: SemanticCtx): Boolean = {
       t.symbolOpt.exists(_.normalized.syntax == s)
     }
 
-    def isOneOfSymbols(symbols: Set[String])(implicit mirror: Mirror): Boolean =
+    def isOneOfSymbols(symbols: Set[String])(implicit mirror: SemanticCtx): Boolean =
       t.symbolOpt.exists(s => symbols.contains(s.normalized.syntax))
   }
 }
 
-case class Scalafixargonautcirce_master(mirror: Mirror)
+case class Scalafixargonautcirce_v0_0_1(mirror: SemanticCtx)
     extends SemanticRewrite(mirror) {
   import Util._
 
@@ -56,7 +56,7 @@ case class Scalafixargonautcirce_master(mirror: Mirror)
                    Lit.String(last_name))
             )
           ) if n.isOneOfSymbols(renames.keySet) =>
-        val renameTo = renames(n.symbol.normalized.syntax)
+        val renameTo = renames(n.symbol.get.normalized.syntax)
         val renameTerm = Term.Name.apply(renameTo)
         val typeTerm = Term.Name.apply(user)
 
@@ -87,7 +87,7 @@ case class Scalafixargonautcirce_master(mirror: Mirror)
               fields
             )
           ) if n.isOneOfSymbols(renames.keySet) =>
-        val renameTo = renames(n.symbol.normalized.syntax)
+        val renameTo = renames(n.symbol.get.normalized.syntax)
         val renameTerm = Term.Name.apply(renameTo)
         val dMod = defnDef.copy(
           decltpe = defnDef.decltpe match {
